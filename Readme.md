@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Ульяна Фомина](https://up.htmlacademy.ru/javascript/19/user/967095).
-* Наставник: `Неизвестно`.
+* Наставник: [Константин Цуканов](https://htmlacademy.ru/profile/id769011).
 
 ---
 
