@@ -18,31 +18,31 @@ var CHECKOUTS = [
   '14:00'
 ];
 var ALL_FEATURES = [
-  "wifi",
-  "dishwasher",
-  "parking",
-  "washer",
-  "elevator",
-  "conditioner"
+  'wifi',
+  'dishwasher',
+  'parking',
+  'washer',
+  'elevator',
+  'conditioner'
 ];
 var ALL_PHOTOS
  = [
-  'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
-  'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
-  'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
-];
+   'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
+   'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
+   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
+ ];
 
 
 var titles = [
-   'заголовок1',
-   'заголовок2',
-   'заголовок3',
-   'заголовок4',
-   'заголовок5',
-   'заголовок6',
-   'заголовок7',
-   'заголовок8'
-  ];
+  'заголовок1',
+  'заголовок2',
+  'заголовок3',
+  'заголовок4',
+  'заголовок5',
+  'заголовок6',
+  'заголовок7',
+  'заголовок8'
+];
 var addresses = [
   '100, 200',
   '200, 100',
@@ -54,14 +54,14 @@ var addresses = [
   '700, 900'
 ];
 var descriptions = [
- 'описание1',
- 'описание2',
- 'описание3',
- 'описание4',
- 'описание5',
- 'описание6',
- 'описание7',
- 'описание8'
+  'описание1',
+  'описание2',
+  'описание3',
+  'описание4',
+  'описание5',
+  'описание6',
+  'описание7',
+  'описание8'
 ];
 
 var dataItems = [];
@@ -78,8 +78,16 @@ var getRandomNumber = function (min, max) {
 };
 
 var getRandomItem = function (item) {
-  return item[getRandomNumber(0, item.length)]
+  return item[getRandomNumber(0, item.length)];
 };
+
+// var getPosts = function (returnedFunction) {
+//   var currentArr  = [];
+//   for (var i = 1; i < TOTAL_POSTS; i++) {
+//     currentArr[i] = returnedFunction();
+//   }
+//   return currentArr;
+// }
 
 var getRandomIndex = function (arr) {
   var index = getRandomNumber(0, arr.length);
@@ -88,25 +96,22 @@ var getRandomIndex = function (arr) {
 };
 
 
-  var getSrcAvatar = function () {
-    var address = [];
-    for (var i = 1; i < TOTAL_POSTS + 1; i++) {
-      address[i] = 'img/avatars/user0' + i +'.png';
-    }
-    return address;
-  };
-  var avatarsUrl = getSrcAvatar();
+var getSrcAvatar = function () {
+  var address = [];
+  for (var i = 1; i < TOTAL_POSTS + 1; i++) {
+    address[i] = 'img/avatars/user0' + i + '.png';
+  }
+  return address;
+};
+var avatarsUrl = getSrcAvatar();
+
 
 var getAutor = function () {
-  var photo = avatarsUrl.pop();
-    var userAutor = {
-      avatar: photo
-    }
-    dataItems.push(userAutor);
-};
-
-
-var getRandomOffer = function () {
+  var userArr = [];
+  var avatarUrl = avatarsUrl.pop();
+  var userAutor = {
+    avatar: avatarUrl
+  };
   var userOffer = {
     title: getRandomItem(titles),
     address: getRandomItem(addresses),
@@ -119,23 +124,22 @@ var getRandomOffer = function () {
     features: getRandomIndex(ALL_FEATURES),
     description: getRandomItem(descriptions),
     photos: getRandomIndex(ALL_PHOTOS)
-  }
-  dataItems.push(userOffer);
-};
-
-var getRandomLocation = function () {
+  };
   var userLocation = {
     x: getRandomNumber(0, 100),
     y: getRandomNumber(130, 630)
-  }
-  dataItems.push(userLocation);
-}
+  };
+  userArr.push(userAutor, userOffer, userLocation);
+  return userArr;
+};
 
 
 var renderPin = function () {
   var fragment = document.createDocumentFragment();
 
   for (var i = 0; i < dataItems.length; i++) {
+    var photo = avatarsUrl;
+
     var pinElement = templatePin.cloneNode(true);
     pinElement.style.left = dataItems[i].x + 'px';
     pinElement.style.top = dataItems[i].y + 'px';
@@ -146,9 +150,3 @@ var renderPin = function () {
   }
   mapPins.append(fragment);
 };
-
-getRandomLocation();
-getAutor();
-getRandomOffer();
-renderPin();
-console.log(dataItems);
