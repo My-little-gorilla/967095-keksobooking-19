@@ -81,13 +81,14 @@ var getRandomItem = function (item) {
   return item[getRandomNumber(0, item.length)];
 };
 
-// var getPosts = function (returnedFunction) {
-//   var currentArr  = [];
-//   for (var i = 1; i < TOTAL_POSTS; i++) {
-//     currentArr[i] = returnedFunction();
-//   }
-//   return currentArr;
-// }
+var getPosts = function (returnedFunction) {
+  var currentArr = [];
+  for (var i = 1; i <= TOTAL_POSTS; i++) {
+    currentArr[i - 1] = returnedFunction();
+  }
+  return currentArr;
+};
+
 
 var getRandomIndex = function (arr) {
   var index = getRandomNumber(0, arr.length);
@@ -112,6 +113,10 @@ var getAutor = function () {
   var userAutor = {
     avatar: avatarUrl
   };
+  return userAutor;
+};
+
+var getOffer = function () {
   var userOffer = {
     title: getRandomItem(titles),
     address: getRandomItem(addresses),
@@ -125,28 +130,44 @@ var getAutor = function () {
     description: getRandomItem(descriptions),
     photos: getRandomIndex(ALL_PHOTOS)
   };
+  return userOffer;
+};
+
+var getLocation = function () {
   var userLocation = {
     x: getRandomNumber(0, 100),
     y: getRandomNumber(130, 630)
   };
-  userArr.push(userAutor, userOffer, userLocation);
-  return userArr;
+  return userLocation;
 };
 
+var getUserItems = function () {
+  var userItems = {
+    userAutors: getPosts(getAutor),
+    userOffers: getPosts(getOffer),
+    userLocations: getPosts(getLocation)
+  };
+  return userItems;
+};
+
+var userData = getUserItems();
 
 var renderPin = function () {
   var fragment = document.createDocumentFragment();
 
-  for (var i = 0; i < dataItems.length; i++) {
-    var photo = avatarsUrl;
+  for (var i = 0; i < TOTAL_POSTS; i++) {
+
+    var dataItem = userData[i];
 
     var pinElement = templatePin.cloneNode(true);
-    pinElement.style.left = dataItems[i].x + 'px';
-    pinElement.style.top = dataItems[i].y + 'px';
-    pinElement.querySelector('img').src = dataItems[i].avatar;
-    pinElement.querySelector('img').alt = dataItems[i].title;
+    pinElement.style.left = dataItem.userLocations.x + 'px';
+    pinElement.style.top = dataItem.userLocations.y + 'px';
+    pinElement.querySelector('img').src = dataItem.userAutors.avatar;
+    pinElement.querySelector('img').alt = dataItem.userOffers.title;
 
-    fragment.append(pinElement);
+    fragment.appendChild(pinElement);
   }
-  mapPins.append(fragment);
+  mapPins.appendChild(fragment);
 };
+
+renderPin();
