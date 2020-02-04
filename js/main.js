@@ -113,7 +113,6 @@ var pins = generatePins(TOTAL_POSTS);
 var renderPins = function (pinsArr) {
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < pinsArr.length; i++) {
-
     var pin = pinsArr[i];
 
     var pinElement = templatePin.cloneNode(true);
