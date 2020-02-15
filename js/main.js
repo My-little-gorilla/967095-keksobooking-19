@@ -189,33 +189,16 @@ var createCardElement = function (pin) {
   filtersElement.insertAdjacentElement('beforebegin', cardElement);
 };
 
-createCardElement(pins[0]);
+// createCardElement(pins[0]);
 renderPins(pins);
 
 
 // close popup
 var ESC = 27;
+var ENTER = 13;
 var closeButton = document.querySelector('.popup__close');
 var popupCard = document.querySelector('.map__card');
 var renderedPins = Array.from(document.querySelectorAll('.map__pin'));
-
-
-var closePopup = function (element) {
-  element.classList.add('hidden');
-};
-
-
-var delitePopup = function (evt) {
-  if (evt.keyCode === ESC) {
-    closePopup(popupCard);
-  }
-};
-
-closeButton.addEventListener ('click', function () {
-  closePopup(popupCard);
-});
-
-document.addEventListener ('keydown', delitePopup);
 
 
 // var PIN_TIP_HEIGHT = 22;
@@ -234,6 +217,20 @@ var changeFieldCondition = function (arr, condition) {
   }
   return arr;
 };
+
+
+mapPins.addEventListener('click', function (evt) {
+  var arr = [];
+  var target = event.target;
+  if (target.className != 'map__pin' || target.className === 'map__pin--main') return;
+  for (var i = 0; i <= TOTAL_POSTS; i++) {
+    if (target === userPins[i])
+    arr[i] = userPins[i];
+  }
+  var currentPin = arr.length;
+  createCardElement(pins[currentPin - 1]);
+});
+
 
 
 var fillAdressField = function (pin) {
@@ -276,17 +273,24 @@ var deliteMainPin = function (arr) {
 var userPins = deliteMainPin(renderedPins);
 
 
-mapPins.addEventListener('click', function (evt) {
-  var arr = [];
-  var target = event.target;
-  if (target.className != 'map__pin' || target.className === 'map__pin--main') return;
-  for (var i = 0; i <= TOTAL_POSTS; i++) {
-    if (target === userPins[i])
-    arr[i] = userPins[i];
+
+
+var closePopup = function (element) {
+  element.classList.add('hidden');
+};
+
+
+var delitePopup = function (evt) {
+  if (evt.keyCode === ESC) {
+    closePopup(popupCard);
   }
-  var currentPin = arr.length;
-  createCardElement(pins[currentPin]);
+};
+
+closeButton.addEventListener ('click', function () {
+  closePopup(popupCard);
 });
+
+document.addEventListener ('keydown', delitePopup);
 
 
 // valid
