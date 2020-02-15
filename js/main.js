@@ -34,7 +34,9 @@ map.classList.remove('map--faded');
 
 
 var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
+
 var mapPins = map.querySelector('.map__pins');
+
 
 var getRandomNumber = function (min, max) {
   return Math.floor(Math.random() * (max - min) + min);
@@ -190,12 +192,13 @@ var createCardElement = function (pin) {
 createCardElement(pins[0]);
 renderPins(pins);
 
+
 // close popup
 var ESC = 27;
-
 var closeButton = document.querySelector('.popup__close');
 var popupCard = document.querySelector('.map__card');
-var renderedPins = document.querySelectorAll('.map__pin');
+var renderedPins = Array.from(document.querySelectorAll('.map__pin'));
+
 
 var closePopup = function (element) {
   element.classList.add('hidden');
@@ -215,8 +218,6 @@ closeButton.addEventListener ('click', function () {
 document.addEventListener ('keydown', delitePopup);
 
 
-
-var ENTER = 13;
 // var PIN_TIP_HEIGHT = 22;
 // var MAIN_PIN_HEIGHT = 65;
 var mapFilter = document.querySelector('.map__filters');
@@ -246,7 +247,6 @@ var fillAdressField = function (pin) {
 };
 
 fillAdressField(mainPin, HEIGHT_PIN);
-
 changeFieldCondition(mapFilters, true);
 changeFieldCondition(mapAdFormFields, true);
 
@@ -254,7 +254,6 @@ var activateMap = function () {
   renderPins(pins);
   changeFieldCondition(mapFilters);
   changeFieldCondition(mapAdFormFields);
-
   fillAdressField(mainPin, HEIGHT_PIN);
 };
 
@@ -270,17 +269,24 @@ mainPin.addEventListener('mousedown', function () {
   }
 });
 
-  mapPins.addEventListener('click', function (evt) {
-    var arr = [];
-    var target = event.target; // где был клик?
-    if (target.className != 'map__pin') return; // не на TD? тогда не интересует
-    for (var i = 0; i < renderedPins.length; i++) {
-      if (target === renderedPins[i])
-      arr[i] = renderedPins[i];
-    }
-    var currentPin = arr.length;
-     createCardElement(pins[currentPin]);
-  });
+var deliteMainPin = function (arr) {
+ return arr.splice(1, arr.length);
+};
+
+var userPins = deliteMainPin(renderedPins);
+
+
+mapPins.addEventListener('click', function (evt) {
+  var arr = [];
+  var target = event.target;
+  if (target.className != 'map__pin' || target.className === 'map__pin--main') return;
+  for (var i = 0; i <= TOTAL_POSTS; i++) {
+    if (target === userPins[i])
+    arr[i] = userPins[i];
+  }
+  var currentPin = arr.length;
+  createCardElement(pins[currentPin]);
+});
 
 
 // valid
