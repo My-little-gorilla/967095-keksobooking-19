@@ -1,5 +1,8 @@
 'use strict';
 
+var ESC = 27;
+var ENTER = 13;
+
 var TOTAL_POSTS = 8;
 var WIDTH_PIN = 50;
 var HEIGHT_PIN = 70;
@@ -30,11 +33,12 @@ var ALL_PHOTOS = [
 
 
 var map = document.querySelector('.map');
-map.classList.remove('map--faded');
-
+var cardElement = null;
 
 var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
+
 var mapPins = map.querySelector('.map__pins');
+
 
 var getRandomNumber = function (min, max) {
   return Math.floor(Math.random() * (max - min) + min);
@@ -116,18 +120,19 @@ var pins = generatePins(TOTAL_POSTS);
 
 var renderPins = function (pinsArr) {
   var fragment = document.createDocumentFragment();
-  for (var i = 0; i < pinsArr.length; i++) {
 
-    var pin = pinsArr[i];
-
+  pinsArr.forEach(function (pin) {
     var pinElement = templatePin.cloneNode(true);
     pinElement.style.left = pin.location.x + 'px';
     pinElement.style.top = pin.location.y + 'px';
     pinElement.querySelector('img').src = pin.autor.avatar;
     pinElement.querySelector('img').alt = pin.offer.title;
 
+    pinElement.addEventListener('click', function () {
+      createCardElement(pin);
+    });
     fragment.appendChild(pinElement);
-  }
+  });
   mapPins.appendChild(fragment);
 };
 
@@ -155,12 +160,35 @@ var renderCardImage = function (container, photos) {
   imageTemplate.remove();
 };
 
+var removeCardElement = function () {
+  if (cardElement) {
+    cardElement.remove();
+  }
+  cardElement = null;
+};
+
+var removeCardHandler = function (evt) {
+  if (evt.keyCode === ESC) {
+    removeCardElement();
+  }
+};
+
 var createCardElement = function (pin) {
   var card = pin;
   var templateCard = document.querySelector('#card').content.querySelector('.map__card');
-  var cardElement = templateCard.cloneNode(true);
+
+  removeCardElement();
+
+  cardElement = templateCard.cloneNode(true);
   var cardPhotoContainer = cardElement.querySelector('.popup__photos');
   var filtersElement = document.querySelector('.map__filters-container');
+
+  var closeButton = cardElement.querySelector('.popup__close');
+  closeButton.addEventListener('click', function () {
+    removeCardElement();
+  });
+
+  map.addEventListener('keydown', removeCardHandler);
 
 
   cardElement.querySelector('.popup__title').textContent = card.offer.title;
@@ -188,5 +216,76 @@ var createCardElement = function (pin) {
 };
 
 
-createCardElement(pins[0]);
-renderPins(pins);
+// var PIN_TIP_HEIGHT = 22;
+// var MAIN_PIN_HEIGHT = 65;
+var mapFilter = document.querySelector('.map__filters');
+var mapFilters = mapFilter.children;
+var mapAdForm = document.querySelector('.ad-form');
+var mapAdFormFields = mapAdForm.children;
+var mainPin = document.querySelector('.map__pin--main');
+var addressField = document.querySelector('#address');
+
+var changeFieldCondition = function (arr, condition) {
+  for (var i = 0; i < arr.length; i++) {
+    arr[i].disabled = condition;
+  }
+  return arr;
+};
+
+
+var fillAdressField = function (pin) {
+  var pinWidth = pin.getBoundingClientRect().width;
+  var pinX = Math.floor(pin.getBoundingClientRect().x - (pinWidth / 2));
+  var pinY = Math.floor(pin.getBoundingClientRect().y);
+
+  var addressValue = pinX + ', ' + pinY;
+  addressField.value = addressValue;
+};
+
+fillAdressField(mainPin, HEIGHT_PIN);
+changeFieldCondition(mapFilters, true);
+changeFieldCondition(mapAdFormFields, true);
+
+var activateMap = function () {
+  map.classList.remove('map--faded');
+  mapAdForm.classList.remove('ad-form--disabled');
+
+  renderPins(pins);
+  changeFieldCondition(mapFilters);
+  changeFieldCondition(mapAdFormFields);
+  fillAdressField(mainPin, HEIGHT_PIN);
+};
+
+mainPin.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER) {
+    activateMap();
+  }
+});
+mainPin.addEventListener('mousedown', function () {
+  var buttonPressed = window.event.button;
+  if (buttonPressed === 0) {
+    activateMap();
+  }
+});
+
+var noticeForm = document.querySelector('.notice');
+noticeForm.addEventListener('mouseover', function () {
+  map.removeEventListener('keydown', removeCardHandler);
+});
+// valid
+
+var notLetMore = function () {
+  var roomNumber = document.querySelector('#room_number');
+  var capacity = document.querySelector('#capacity');
+
+  return roomNumber.value <= capacity.value;
+};
+
+
+mapAdForm.addEventListener('change', function (evt) {
+  // var currentField = evt.target;
+  // var currentFieldValue = evt.target.value;
+  if (!notLetMore()) {
+    evt.target.setCustomValidity('no!');
+  }
+});
