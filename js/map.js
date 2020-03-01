@@ -2,14 +2,15 @@
 
 (function () {
   var HEIGHT_PIN = 70;
-  var map = window.tools.findedElement('.map');
 
-  var mapFilter = window.tools.findedElement('.map__filters');
-  var mapFilters = mapFilter.children;
-  var mapAdForm = window.tools.findedElement('.ad-form');
-  var mapAdFormFields = mapAdForm.children;
-  var mainPin = window.tools.findedElement('.map__pin--main');
-  var addressField = window.tools.findedElement('#address');
+  var findElement = window.tools.findElement;
+
+  var mapElement = findElement('.map');
+  var filtersElement = findElement('.map__filters');
+  var formElement = findElement('.ad-form');
+  var mainPin = findElement('.map__pin--main');
+
+  var addressElement = formElement.elements.address;
 
   var changeFieldCondition = function (arr, condition) {
     for (var i = 0; i < arr.length; i++) {
@@ -25,38 +26,35 @@
     var pinY = Math.floor(pin.getBoundingClientRect().y);
 
     var addressValue = pinX + ', ' + pinY;
-    addressField.value = addressValue;
+    addressElement.value = addressValue;
   };
 
   fillAdressField(mainPin, HEIGHT_PIN);
-  changeFieldCondition(mapFilters, true);
-  changeFieldCondition(mapAdFormFields, true);
+  changeFieldCondition(filtersElement.children, true);
+  changeFieldCondition(formElement.children, true);
 
   var activateMap = function () {
-    map.classList.remove('map--faded');
-    mapAdForm.classList.remove('ad-form--disabled');
+    mapElement.classList.remove('map--faded');
+    formElement.classList.remove('ad-form--disabled');
 
-    window.pin.renderedPins(window.data.pins);
-    changeFieldCondition(mapFilters);
-    changeFieldCondition(mapAdFormFields);
+    window.pin.renderedPins(window.data);
+    changeFieldCondition(filtersElement.children);
+    changeFieldCondition(formElement.children);
     fillAdressField(mainPin, HEIGHT_PIN);
   };
 
   mainPin.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.tools.enterKeycode) {
+    if (window.tools.isEnter(evt)) {
       activateMap();
     }
   });
+
   mainPin.addEventListener('mousedown', function () {
-    var buttonPressed = window.event.button;
-    if (buttonPressed === 0) {
-      activateMap();
-    }
+    activateMap();
   });
 
-  var noticeForm = window.tools.findedElement('.notice');
-  noticeForm.addEventListener('mouseover', function () {
-    map.removeEventListener('keydown', window.card.removeCard);
-  });
-
+  window.map = {
+    formElement: formElement,
+    element: mapElement
+  };
 })();

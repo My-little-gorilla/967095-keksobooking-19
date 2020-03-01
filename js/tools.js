@@ -2,6 +2,7 @@
 
 (function () {
   var ENTER = 13;
+  var ESC = 27;
 
   var findElement = function (query, element, all) {
     if (!element) {
@@ -15,11 +16,18 @@
     return Math.floor(Math.random() * (max - min) + min);
   };
 
+  var isEnter = function (evt) {
+    return evt.keyCode === ENTER;
+  };
+
+  var isEsc = function (evt) {
+    return evt.keyCode === ESC;
+  };
 
   window.tools = {
-    findedElement: findElement,
-    randomElement: getRandomNumber,
-    map: findElement('.map'),
-    enterKeycode: ENTER
+    findElement: findElement,
+    getRandomNumber: getRandomNumber,
+    isEnter: isEnter,
+    isEsc: isEsc
   };
 })();

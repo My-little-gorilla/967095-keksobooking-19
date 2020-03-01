@@ -1,13 +1,12 @@
 'use strict';
 
 (function () {
-  var TOTAL_POSTS = 8;
-  var WIDTH_PIN = 50;
-  var HEIGHT_PIN = 70;
 
-  var cardElement = null;
-  var templatePin = window.tools.findedElement('#pin').content.querySelector('.map__pin');
-  var mapPins = window.tools.map.querySelector('.map__pins');
+  var findElement = window.tools.findElement;
+
+  var templatePinContent = findElement('#pin').content;
+  var templatePin = findElement('.map__pin', templatePinContent);
+  var mapPins = findElement('.map__pins', window.map.element);
 
 
   var renderPins = function (pinsArr) {
@@ -40,8 +39,8 @@
     featureList.appendChild(featureFragment);
   };
 
-window.pin = {
+  window.pin = {
     renderedPins: renderPins,
     createdFeatures: createFeatures
-};
+  };
 })();

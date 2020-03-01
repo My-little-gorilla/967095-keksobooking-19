@@ -1,7 +1,16 @@
 'use strict';
 
 (function () {
-  var ESC = 27;
+  // Это не перечисление, это объект для маппинга
+  var HOUSE_TYPES = {
+    flat: 'Квартира',
+    bungalo: 'Бунгало',
+    house: 'Дом',
+    palace: 'Дворец'
+  };
+
+  var findElement = window.tools.findElement;
+
   var cardElement = null;
 
   var renderCardImage = function (container, photos) {
@@ -17,12 +26,13 @@
   var removeCardElement = function () {
     if (cardElement) {
       cardElement.remove();
+      window.removeEventListener('keydown', removeCardHandler);
     }
     cardElement = null;
   };
 
   var removeCardHandler = function (evt) {
-    if (evt.keyCode === ESC) {
+    if (window.tools.isEsc(evt)) {
       removeCardElement();
     }
   };
@@ -34,28 +44,22 @@
     removeCardElement();
 
     cardElement = templateCard.cloneNode(true);
-    var cardPhotoContainer = window.tools.findedElement('.popup__photos', cardElement);
-    var filtersElement = window.tools.findedElement('.map__filters-container');
+    var cardPhotoContainer = findElement('.popup__photos', cardElement);
+    var filtersElement = findElement('.map__filters-container');
 
     var closeButton = cardElement.querySelector('.popup__close');
     closeButton.addEventListener('click', function () {
       removeCardElement();
     });
 
-    window.tools.map.addEventListener('keydown', removeCardHandler);
+    window.addEventListener('keydown', removeCardHandler);
 
 
     cardElement.querySelector('.popup__title').textContent = card.offer.title;
     cardElement.querySelector('.popup__text--address').textContent = card.offer.address;
     cardElement.querySelector('.popup__text--price').textContent = card.offer.price + '₽/ночь';
 
-    var houseTypes = {
-      flat: 'Квартира',
-      bungalo: 'Бунгало',
-      house: 'Дом',
-      palace: 'Дворец'
-    };
-    var type = houseTypes[card.offer.type];
+    var type = HOUSE_TYPES[card.offer.type];
     cardElement.querySelector('.popup__type').textContent = type;
 
     cardElement.querySelector('.popup__text--capacity').textContent = card.offer.rooms + ' комнат для ' + card.offer.guests + ' гостей';

@@ -1,4 +1,5 @@
 'use strict';
+
 (function () {
   var TOTAL_POSTS = 8;
   var WIDTH_PIN = 50;
@@ -28,10 +29,12 @@
     'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
   ];
 
+  var getRandomNumber = window.tools.getRandomNumber;
+
   var getRandomAddresses = function () {
     var addresses = [];
     for (var i = 0; i < TOTAL_POSTS; i++) {
-      addresses[i] = '' + window.tools.randomElement(100, 1000) + ',' + ' ' + window.tools.randomElement(100, 1000) + '';
+      addresses[i] = '' + getRandomNumber(100, 1000) + ',' + ' ' + getRandomNumber(100, 1000) + '';
     }
     return addresses;
   };
@@ -39,7 +42,7 @@
   var getRandomTextNumber = function (text) {
     var textArr = [];
     for (var i = 0; i < TOTAL_POSTS; i++) {
-      textArr[i] = text + window.tools.randomElement(1, TOTAL_POSTS);
+      textArr[i] = text + getRandomNumber(1, TOTAL_POSTS);
     }
     return textArr;
   };
@@ -49,7 +52,7 @@
   var randomTitles = getRandomTextNumber('title');
 
   var getRandomLengthElements = function (elements) {
-    var length = window.tools.randomElement(0, elements.length + 1);
+    var length = getRandomNumber(0, elements.length + 1);
     return elements.slice(0, length);
   };
 
@@ -68,21 +71,21 @@
         avatar: avatarsUrl.pop()
       },
       offer: {
-        title: randomTitles[window.tools.randomElement(0, TOTAL_POSTS)],
-        address: randomAddresses[window.tools.randomElement(0, TOTAL_POSTS)],
-        price: window.tools.randomElement(134, 37463),
-        type: TYPES[window.tools.randomElement(0, TYPES.length)],
-        rooms: window.tools.randomElement(1, 5),
-        checkin: CHECKINS_CHECKOUTS[window.tools.randomElement(0, CHECKINS_CHECKOUTS.length)],
-        checkout: CHECKINS_CHECKOUTS[window.tools.randomElement(0, CHECKINS_CHECKOUTS.length)],
+        title: randomTitles[getRandomNumber(0, TOTAL_POSTS)],
+        address: randomAddresses[getRandomNumber(0, TOTAL_POSTS)],
+        price: getRandomNumber(134, 37463),
+        type: TYPES[getRandomNumber(0, TYPES.length)],
+        rooms: getRandomNumber(1, 5),
+        checkin: CHECKINS_CHECKOUTS[getRandomNumber(0, CHECKINS_CHECKOUTS.length)],
+        checkout: CHECKINS_CHECKOUTS[getRandomNumber(0, CHECKINS_CHECKOUTS.length)],
         features: getRandomLengthElements(ALL_FEATURES),
-        description: randomDescriptions[window.tools.randomElement(0, randomDescriptions.length)],
+        description: randomDescriptions[getRandomNumber(0, randomDescriptions.length)],
         photos: getRandomLengthElements(ALL_PHOTOS),
-        guests: window.tools.randomElement(0, 10)
+        guests: getRandomNumber(0, 10)
       },
       location: {
-        x: window.tools.randomElement(0, 1200) - (WIDTH_PIN / 2),
-        y: window.tools.randomElement(130, 630) - HEIGHT_PIN
+        x: getRandomNumber(0, 1200) - (WIDTH_PIN / 2),
+        y: getRandomNumber(130, 630) - HEIGHT_PIN
       }
     };
     return userGen;
@@ -100,8 +103,6 @@
   var pins = generatePins(TOTAL_POSTS);
 
 
-window.data = {
-  pins
-};
-console.log(window.data);
+  window.data = pins;
+
 })();
