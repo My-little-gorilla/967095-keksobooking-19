@@ -24,11 +24,11 @@
     return evt.keyCode === ESC;
   };
 
-  var addListener = function (element, event, handler, useCapture) {
+  var listen = function (element, event, handler, useCapture) {
     element.addEventListener(event, handler, useCapture);
   };
 
-  var removeListener = function (element, event, handler, useCapture) {
+  var unlisten = function (element, event, handler, useCapture) {
     element.removeEventListener(event, handler, useCapture);
   };
 
@@ -37,7 +37,7 @@
     getRandomNumber: getRandomNumber,
     isEnter: isEnter,
     isEsc: isEsc,
-    addEvent: addListener,
-    removeEvent: removeListener
+    listen: listen,
+    unlisten: unlisten
   };
 })();

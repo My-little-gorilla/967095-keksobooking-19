@@ -3,12 +3,28 @@
 (function () {
   var HEIGHT_PIN = 70;
 
+  var LimitX = {
+    MIN: 0,
+    MAX: 1200
+  };
+
+  var LimitY = {
+    MIN: 130,
+    MAX: 630
+  };
+
+  var PinSize = {
+    WIDTH: 65,
+    HEIGHT: 70
+  };
+
   var findElement = window.tools.findElement;
 
   var mapElement = findElement('.map');
   var filtersElement = findElement('.map__filters');
   var formElement = findElement('.ad-form');
   var mainPin = findElement('.map__pin--main');
+  var mapPinsElement = findElement('.map__pins');
 
   var addressElement = formElement.elements.address;
 
@@ -19,14 +35,17 @@
     return arr;
   };
 
+  var setAddressField = function (x, y) {
+    addressElement.value = Math.floor(x) + ', ' + Math.floor(y);
+  };
+
 
   var fillAdressField = function (pin) {
     var pinWidth = pin.getBoundingClientRect().width;
-    var pinX = Math.floor(pin.getBoundingClientRect().x - (pinWidth / 2));
-    var pinY = Math.floor(pin.getBoundingClientRect().y);
+    var pinX = pin.getBoundingClientRect().x - (pinWidth / 2);
+    var pinY = pin.getBoundingClientRect().y;
 
-    var addressValue = pinX + ', ' + pinY;
-    addressElement.value = addressValue;
+    setAddressField(pinX, pinY);
   };
 
   fillAdressField(mainPin, HEIGHT_PIN);
@@ -49,49 +68,69 @@
     }
   });
 
+  var getAddress = function (left, top) {
+    var addressX = left + PinSize.WIDTH / 2;
+    var addressY = top + PinSize.HEIGHT;
 
-  var mapArea = findElement('.map__pins');
+    if (addressX < LimitX.MIN) {
+      addressX = LimitX.MIN;
+    } else if (addressX > LimitX.MAX) {
+      addressX = LimitX.MAX;
+    }
 
-  mainPin.addEventListener('mousedown', onPinMouseDown);
-  mainPin.addEventListener('mousedown', activateMap);
+    if (addressY < LimitY.MIN) {
+      addressY = LimitY.MIN;
+    } else if (addressY > LimitY.MAX) {
+      addressY = LimitY.MAX;
+    }
 
-  var movePinTo = function (left, top) {
-    mainPin.style.left = left + 'px';
-    mainPin.style.left = top + 'px';
-    addressElement.value = left + ',' + top;
+    return {
+      x: addressX,
+      y: addressY
+    };
   };
 
+  var movePinTo = function (left, top) {
+    var address = getAddress(left, top);
 
-  var move = function (clientX, left, offsetX, maxLeft, clientY, top, offsetY, maxTop) {
-    var left = clientX - left - offsetX;
-    var top = clientY - top - offsetY;
-    if (left < 0) {
-      left = 0;
-    }
-    if (left > maxLeft) {
-      left = maxLeft;
-    }
-    movePinTo(left, top);
+    mainPin.style.left = (address.x - PinSize.WIDTH / 2) + 'px';
+    mainPin.style.top = (address.y - PinSize.HEIGHT) + 'px';
+
+    setAddressField(address.x, address.y);
+  };
+
+  var move = function (left, top, offset, evt, pinRect) {
+    var leftTo = evt.clientX - left - offset.x;
+    var topTo = evt.clientY - top - offset.y;
+
+    movePinTo(leftTo, topTo, pinRect);
   };
 
 
   var onPinMouseDown = function (evt) {
-    var rect = mapArea.getBoundingClientRect();
-    var maxLeft = rect.width;
-    var offsetX = evt.offsetX;
-    var offsetY = evt.offsetY;
-    var onMove = function (evt) {
-      evt.stopPropagation();
-      move(evt.clientX, rect.left, offsetX, maxLeft, evt.clientY, rect.top, offsetY);
+    activateMap();
+    var rect = mapPinsElement.getBoundingClientRect();
+    var pinRect = mainPin.getBoundingClientRect();
+
+    var offset = {
+      x: evt.offsetX,
+      y: evt.offsetY
     };
 
-    var onUp = function (evt) {
+    var onMove = function (moveEvt) {
+      moveEvt.stopPropagation();
+      move(rect.left, rect.top, offset, moveEvt, pinRect);
+    };
+
+    var onUp = function () {
       document.removeEventListener('mousemove', onMove, true);
       document.removeEventListener('mouseup', onUp);
     };
     document.addEventListener('mousemove', onMove, true);
     document.addEventListener('mouseup', onUp);
   };
+
+  mainPin.addEventListener('mousedown', onPinMouseDown);
 
   window.map = {
     formElement: formElement,

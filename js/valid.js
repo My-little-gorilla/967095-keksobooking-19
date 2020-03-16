@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var MAX_PRICE = 1000000;
   var HOUSE_MIN_PRICES = {
     flat: 1000,
     bungalo: 0,
@@ -9,70 +8,64 @@
     palace: 10000
   };
 
+  var listen = window.tools.listen;
+
 
   var findElement = window.tools.findElement;
-  var formConteiner = findElement('.ad-form');
-  var type = findElement('#type');
-  var checkIn = findElement('#timein');
-  var checkOut = findElement('#timeout');
+  var formContainer = findElement('.ad-form');
 
+  var typeElement = formContainer.elements.type;
+  var priceElement = formContainer.elements.price;
+  var inElement = formContainer.elements.timein;
+  var outElement = formContainer.elements.timeout;
+  var roomsElement = formContainer.elements.rooms;
+  var capacityElement = formContainer.elements.capacity;
 
-  var notLetMore = function () {
-    var roomNumber = findElement('#room_number');
-    var capacity = findElement('#capacity');
-    var roomNumberValue = parseInt(roomNumber.value, 10);
-    var capacityValue = parseInt(capacity.value, 10);
-    // var price = findElement('#price');
-    return roomNumberValue <= capacityValue;
+  var changeMinLimit = function (inputElement, value) {
+    inputElement.min = value;
+    inputElement.placeholder = value;
   };
 
-
-  var priceCheckValid = function (element) {
-    var isValid = true;
-    var priceText = price.value;
-    var priceValue = parseInt(priceText, 10);
-
-    var minPrice = element.value;
-
-    if (priceValue > MAX_PRICE || priceValue < minPrice) {
-      isValid = false;
-    } else {
-      isValid = true;
-    }
-    return isValid;
-  };
-
-  var checkInValid = function () {
-    var isValid = true;
-    var timeIn = parseInt(checkIn.value, 10);
-    var timeOut = parseInt(checkOut.value, 10);
-    if (timeOut > timeIn) {
-      checkOut.value = checkIn.value;
-    }
-  };
-
-
-  var validators = [
-    priceCheckValid,
-    notLetMore
-  ];
-
-  formConteiner.addEventListener('input', function (evt) {
-    var currentEvent = evt.target;
-    var currentElementEvent = evt.target.value;
-    checkInValid();
-    notLetMore();
-    price.placeholder = HOUSE_MIN_PRICES[type.value];
-
-    for (var i = 0; i < validators.length; i++) {
-      var validator = validators[i];
-
-      if (!validator(currentEvent)) {
-        currentEvent.setCustomValidity('no');
-        break;
-      } else {
-      currentEvent.setCustomValidity('');
-    }}
+  listen(typeElement, 'change', function (evt) {
+    changeMinLimit(priceElement, HOUSE_MIN_PRICES[evt.target.value]);
   });
+
+  var syncValues = function (firstElement, secondElement) {
+    secondElement.value = firstElement.value;
+  };
+
+  listen(inElement, 'change', function () {
+    syncValues(inElement, outElement);
+  });
+
+  listen(outElement, 'change', function () {
+    syncValues(outElement, inElement);
+  });
+
+  var validateRooms = function (rooms, guests) {
+    rooms = parseInt(rooms, 10);
+    guests = parseInt(guests, 10);
+
+    if (rooms === 100) {
+      return guests === 0;
+    }
+
+    if (guests === 0) {
+      return rooms === 100;
+    }
+
+    return rooms >= guests;
+  };
+
+  var onRoomsOrGuestsChange = function () {
+    if (!validateRooms(roomsElement.value, capacityElement.value)) {
+      roomsElement.setCustomValidity('Вы выбрали неверное число гостей и комнат');
+    } else {
+      roomsElement.setCustomValidity('');
+    }
+  };
+
+  listen(roomsElement, 'change', onRoomsOrGuestsChange);
+  listen(capacityElement, 'change', onRoomsOrGuestsChange);
 
 })();
