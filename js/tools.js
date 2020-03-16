@@ -24,10 +24,20 @@
     return evt.keyCode === ESC;
   };
 
+  var listen = function (element, event, handler, useCapture) {
+    element.addEventListener(event, handler, useCapture);
+  };
+
+  var unlisten = function (element, event, handler, useCapture) {
+    element.removeEventListener(event, handler, useCapture);
+  };
+
   window.tools = {
     findElement: findElement,
     getRandomNumber: getRandomNumber,
     isEnter: isEnter,
-    isEsc: isEsc
+    isEsc: isEsc,
+    listen: listen,
+    unlisten: unlisten
   };
 })();
