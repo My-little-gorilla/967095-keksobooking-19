@@ -132,6 +132,12 @@
 
   mainPin.addEventListener('mousedown', onPinMouseDown);
 
+  formElement.addEventListener('submit', function (evt) {
+    // window.upload()
+    window.upload(new FormData(formElement))
+    evt.preventDefault();
+  });
+
   window.map = {
     formElement: formElement,
     element: mapElement
