@@ -19,14 +19,20 @@
   };
 
   var findElement = window.tools.findElement;
+  var listen = window.tools.listen;
 
   var mapElement = findElement('.map');
-  var filtersElement = findElement('.map__filters');
+  var filtersFormElement = findElement('.map__filters');
   var formElement = findElement('.ad-form');
   var mainPin = findElement('.map__pin--main');
   var mapPinsElement = findElement('.map__pins');
 
   var addressElement = formElement.elements.address;
+
+  // Данные пинов
+  var pins = [];
+  // Активирована страница, или нет
+  var activated = false;
 
   var changeFieldCondition = function (arr, condition) {
     for (var i = 0; i < arr.length; i++) {
@@ -49,17 +55,29 @@
   };
 
   fillAdressField(mainPin, HEIGHT_PIN);
-  changeFieldCondition(filtersElement.children, true);
+  changeFieldCondition(filtersFormElement.children, true);
   changeFieldCondition(formElement.children, true);
 
+  var onLoad = function (data) {
+    pins = data;
+    window.pin.renderPins(window.filter(pins));
+  };
+
   var activateMap = function () {
+    if (activated) {
+      return;
+    }
     mapElement.classList.remove('map--faded');
     formElement.classList.remove('ad-form--disabled');
 
-    window.pin.renderedPins(window.data);
-    changeFieldCondition(filtersElement.children);
+    window.backend.load(onLoad, window.modals.showLoadError);
+
+
+    changeFieldCondition(filtersFormElement.children);
     changeFieldCondition(formElement.children);
     fillAdressField(mainPin, HEIGHT_PIN);
+
+    activated = true;
   };
 
   mainPin.addEventListener('keydown', function (evt) {
@@ -133,9 +151,16 @@
   mainPin.addEventListener('mousedown', onPinMouseDown);
 
   formElement.addEventListener('submit', function (evt) {
-    // window.upload()
-    window.upload(new FormData(formElement))
     evt.preventDefault();
+    window.backend.save(
+        new FormData(formElement),
+        window.modals.showSaveSuccess,
+        window.modals.showSaveError
+    );
+  });
+
+  listen(filtersFormElement, 'change', function () {
+    window.pin.renderPins(window.filter(pins));
   });
 
   window.map = {
