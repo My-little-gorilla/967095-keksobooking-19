@@ -10,6 +10,9 @@
   };
 
   var findElement = window.tools.findElement;
+  var listen = window.tools.listen;
+  var unlisten = window.tools.listen;
+
 
   var cardElement = null;
 
@@ -26,7 +29,7 @@
   var removeCardElement = function () {
     if (cardElement) {
       cardElement.remove();
-      window.removeEventListener('keydown', removeCardHandler);
+      unlisten(window, 'keydown', removeCardHandler);
     }
     cardElement = null;
   };
@@ -35,6 +38,19 @@
     if (window.tools.isEsc(evt)) {
       removeCardElement();
     }
+  };
+
+  var createFeatures = function (features, element) {
+    var featureList = element.querySelector('.popup__features');
+    var featureFragment = document.createDocumentFragment();
+
+    for (var i = 0; i < features.length; i++) {
+      var featureElement = document.createElement('li');
+      featureElement.classList.add('popup__feature');
+      featureElement.classList.add('popup__feature--' + features[i]);
+      featureFragment.appendChild(featureElement);
+    }
+    featureList.appendChild(featureFragment);
   };
 
   var createCardElement = function (pin) {
@@ -48,11 +64,11 @@
     var filtersElement = findElement('.map__filters-container');
 
     var closeButton = cardElement.querySelector('.popup__close');
-    closeButton.addEventListener('click', function () {
+    listen(closeButton, 'click', function () {
       removeCardElement();
     });
 
-    window.addEventListener('keydown', removeCardHandler);
+    listen(window, 'keydown', removeCardHandler);
 
 
     cardElement.querySelector('.popup__title').textContent = card.offer.title;
@@ -64,17 +80,17 @@
 
     cardElement.querySelector('.popup__text--capacity').textContent = card.offer.rooms + ' комнат для ' + card.offer.guests + ' гостей';
     cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
-    cardElement.querySelector('.popup__avatar').src = card.autor.avatar;
+    cardElement.querySelector('.popup__avatar').src = card.author.avatar;
     cardElement.querySelector('.popup__description').textContent = card.offer.description;
 
-    window.pin.createdFeatures(card.offer.features, cardElement);
+    createFeatures(card.offer.features, cardElement);
     renderCardImage(cardPhotoContainer, card.offer.photos);
 
     filtersElement.insertAdjacentElement('beforebegin', cardElement);
   };
 
   window.card = {
-    createdCardElement: createCardElement,
-    removeCard: removeCardHandler
+    create: createCardElement,
+    remove: removeCardElement
   };
 })();

@@ -19,14 +19,20 @@
   };
 
   var findElement = window.tools.findElement;
+  var listen = window.tools.listen;
 
   var mapElement = findElement('.map');
-  var filtersElement = findElement('.map__filters');
+  var filtersFormElement = findElement('.map__filters');
   var formElement = findElement('.ad-form');
   var mainPin = findElement('.map__pin--main');
   var mapPinsElement = findElement('.map__pins');
 
   var addressElement = formElement.elements.address;
+
+  // Данные пинов
+  var pins = [];
+  // Активирована страница, или нет
+  var activated = false;
 
   var changeFieldCondition = function (arr, condition) {
     for (var i = 0; i < arr.length; i++) {
@@ -49,20 +55,32 @@
   };
 
   fillAdressField(mainPin, HEIGHT_PIN);
-  changeFieldCondition(filtersElement.children, true);
+  changeFieldCondition(filtersFormElement.children, true);
   changeFieldCondition(formElement.children, true);
 
+  var onLoad = function (data) {
+    pins = data;
+    window.pin.renderPins(window.filter(pins));
+  };
+
   var activateMap = function () {
+    if (activated) {
+      return;
+    }
     mapElement.classList.remove('map--faded');
     formElement.classList.remove('ad-form--disabled');
 
-    window.pin.renderedPins(window.data);
-    changeFieldCondition(filtersElement.children);
+    window.backend.load(onLoad, window.modals.showLoadError);
+
+
+    changeFieldCondition(filtersFormElement.children);
     changeFieldCondition(formElement.children);
     fillAdressField(mainPin, HEIGHT_PIN);
+
+    activated = true;
   };
 
-  mainPin.addEventListener('keydown', function (evt) {
+  listen(mainPin, 'keydown', function (evt) {
     if (window.tools.isEnter(evt)) {
       activateMap();
     }
@@ -126,11 +144,31 @@
       document.removeEventListener('mousemove', onMove, true);
       document.removeEventListener('mouseup', onUp);
     };
-    document.addEventListener('mousemove', onMove, true);
-    document.addEventListener('mouseup', onUp);
+    listen(document, 'mousemove', onMove, true);
+    listen(document, 'mouseup', onUp);
   };
 
-  mainPin.addEventListener('mousedown', onPinMouseDown);
+  listen(mainPin, 'mousedown', onPinMouseDown);
+
+  listen(formElement, 'submit', function (evt) {
+    evt.preventDefault();
+    window.backend.save(
+        new FormData(formElement),
+        window.modals.showSaveSuccess,
+        window.modals.showSaveError
+    );
+  });
+
+  var applyFilter = function () {
+    window.pin.renderPins(window.filter(pins));
+    window.card.remove();
+  };
+
+  var applyFilterDebounced = window.tools.debounce(applyFilter);
+
+  listen(filtersFormElement, 'change', function () {
+    applyFilterDebounced();
+  });
 
   window.map = {
     formElement: formElement,

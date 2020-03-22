@@ -3,6 +3,7 @@
 (function () {
   var ENTER = 13;
   var ESC = 27;
+  var DEBOUNCE_INTERVAL = 300;
 
   var findElement = function (query, element, all) {
     if (!element) {
@@ -32,12 +33,27 @@
     element.removeEventListener(event, handler, useCapture);
   };
 
+  var debounce = function (cb) {
+    var lastTimeout = null;
+    return function () {
+      var parameters = arguments;
+      if (lastTimeout) {
+        window.clearTimeout(lastTimeout);
+      }
+      lastTimeout = window.setTimeout(function () {
+        cb.apply(null, parameters);
+      }, DEBOUNCE_INTERVAL);
+    };
+  };
+
+
   window.tools = {
     findElement: findElement,
     getRandomNumber: getRandomNumber,
     isEnter: isEnter,
     isEsc: isEsc,
     listen: listen,
-    unlisten: unlisten
+    unlisten: unlisten,
+    debounce: debounce
   };
 })();
