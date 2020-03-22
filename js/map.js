@@ -18,6 +18,12 @@
     HEIGHT: 70
   };
 
+  var MainPinStartAddress = {
+    X: 577,
+    Y: 375
+  };
+
+
   var findElement = window.tools.findElement;
   var listen = window.tools.listen;
 
@@ -26,6 +32,7 @@
   var formElement = findElement('.ad-form');
   var mainPin = findElement('.map__pin--main');
   var mapPinsElement = findElement('.map__pins');
+  console.log(mainPin.style);
 
   var addressElement = formElement.elements.address;
 
@@ -79,6 +86,17 @@
 
     activated = true;
   };
+
+
+  var diactivateMap = function () {
+    mapElement.classList.add('map--faded');
+    formElement.classList.add('ad-form--disabled');
+    mainPin.style.left = MainPinStartAddress.X + 'px';
+    mainPin.style.left = MainPinStartAddress.Y + 'px';
+    window.pin.clear();
+    changeFieldCondition(formElement.children, true);
+  };
+
 
   listen(mainPin, 'keydown', function (evt) {
     if (window.tools.isEnter(evt)) {
@@ -152,6 +170,7 @@
 
   listen(formElement, 'submit', function (evt) {
     evt.preventDefault();
+
     window.backend.save(
         new FormData(formElement),
         window.modals.showSaveSuccess,
@@ -172,6 +191,7 @@
 
   window.map = {
     formElement: formElement,
-    element: mapElement
+    element: mapElement,
+    diactivate: diactivateMap
   };
 })();
