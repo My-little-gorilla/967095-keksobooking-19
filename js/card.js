@@ -10,6 +10,9 @@
   };
 
   var findElement = window.tools.findElement;
+  var listen = window.tools.listen;
+  var unlisten = window.tools.listen;
+
 
   var cardElement = null;
 
@@ -26,7 +29,7 @@
   var removeCardElement = function () {
     if (cardElement) {
       cardElement.remove();
-      window.removeEventListener('keydown', removeCardHandler);
+      unlisten(window, 'keydown', removeCardHandler);
     }
     cardElement = null;
   };
@@ -37,8 +40,8 @@
     }
   };
 
-  var createFeatures = function (features, cardElement) {
-    var featureList = cardElement.querySelector('.popup__features');
+  var createFeatures = function (features, element) {
+    var featureList = element.querySelector('.popup__features');
     var featureFragment = document.createDocumentFragment();
 
     for (var i = 0; i < features.length; i++) {
@@ -61,11 +64,11 @@
     var filtersElement = findElement('.map__filters-container');
 
     var closeButton = cardElement.querySelector('.popup__close');
-    closeButton.addEventListener('click', function () {
+    listen(closeButton, 'click', function () {
       removeCardElement();
     });
 
-    window.addEventListener('keydown', removeCardHandler);
+    listen(window, 'keydown', removeCardHandler);
 
 
     cardElement.querySelector('.popup__title').textContent = card.offer.title;
@@ -87,7 +90,7 @@
   };
 
   window.card = {
-    createdCardElement: createCardElement,
-    removeCard: removeCardHandler
+    create: createCardElement,
+    remove: removeCardElement
   };
 })();

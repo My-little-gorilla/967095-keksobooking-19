@@ -28,7 +28,7 @@
       pinElement.querySelector('img').alt = pin.offer.title;
 
       pinElement.addEventListener('click', function () {
-        window.tools.debounce (window.card.createdCardElement(pin))
+        window.card.create(pin);
       });
 
       renderedPins.push(pinElement);

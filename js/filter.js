@@ -8,8 +8,6 @@
     high: {floor: 50000, ceil: Infinity}
   };
 
-  var isEsc = window.tools.isEsc;
-
   var findElement = window.tools.findElement;
 
   var filtersForm = findElement('.map__filters');
@@ -20,9 +18,6 @@
   var roomsSelect = filtersForm.elements['housing-rooms'];
   var guestsSelect = filtersForm.elements['housing-guests'];
   var featuresElements = featuresSelect.elements;
-
-  console.log(featuresElements);
-
 
   var isAny = function (value) {
     return value === 'any';
@@ -35,7 +30,7 @@
   var isPrice = function (pin, price) {
     if (isAny(price)) {
       return true;
-    };
+    }
 
     var limits = PRICES[price];
     return pin.offer.price >= limits.floor
@@ -45,42 +40,40 @@
   var isRooms = function (pin, rooms) {
     if (isAny(rooms)) {
       return true;
-    } else {
-      rooms = parseInt(rooms, 10)
-    };
+    }
+    rooms = parseInt(rooms, 10);
 
-    if (pin.offer.rooms === rooms) {
-      return true;
-    };
+    return pin.offer.rooms === rooms;
   };
 
 
   var isGuests = function (pin, guests) {
     if (isAny(guests)) {
       return true;
-    } else {
-      guests = parseInt(guests, 10)
-    };
+    }
+    guests = parseInt(guests, 10);
 
-    if (pin.offer.guests === guests) {
-      return true;
-    };
+    return pin.offer.guests === guests;
   };
 
-  var isChecked = function (pin) {
-    if (isAny(features)) {
-      return true;
-    };
-    var checkboxesChecked = [];
+  var isFeatures = function (pin) {
     for (var i = 0; i < featuresElements.length; i++) {
-    if (featuresElements[i].checked) {
-       checkboxesChecked.push(featuresElements[i].value);
-     }
-   };
-   if (pin.offer.features === checkboxesChecked) {
-     return true;
-  }
-};
+      var featureElement = featuresElements[i];
+      if (!featureElement.checked) {
+        continue;
+      }
+
+      var hasFeature = pin.offer.features.some(function (feature) {
+        return feature === featureElement.value;
+      });
+
+      if (!hasFeature) {
+        return false;
+      }
+    }
+
+    return true;
+  };
 
   window.filter = function (pins) {
 
@@ -89,8 +82,7 @@
         && isPrice(pin, priceSelect.value)
         && isRooms(pin, roomsSelect.value)
         && isGuests(pin, guestsSelect.value)
-
-        // && isChecked(pin, features.value);
+        && isFeatures(pin);
     });
   };
 })();

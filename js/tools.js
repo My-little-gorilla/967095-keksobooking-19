@@ -34,14 +34,14 @@
   };
 
   var debounce = function (cb) {
-    var lastTimeOut = null;
+    var lastTimeout = null;
     return function () {
       var parameters = arguments;
-      if (lastTimeOut) {
-        window.clearTimeOut(lastTimeOut);
+      if (lastTimeout) {
+        window.clearTimeout(lastTimeout);
       }
-      lastTimeOut= window.setTimeOut(function () {
-        cd.apply(null, parameters);
+      lastTimeout = window.setTimeout(function () {
+        cb.apply(null, parameters);
       }, DEBOUNCE_INTERVAL);
     };
   };
