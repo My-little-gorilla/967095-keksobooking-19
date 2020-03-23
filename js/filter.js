@@ -10,14 +10,13 @@
 
   var findElement = window.tools.findElement;
 
-  var filtersForm = findElement('.map__filters');
-  var featuresSelect = findElement('#housing-features');
-
-  var typeSelect = filtersForm.elements['housing-type'];
-  var priceSelect = filtersForm.elements['housing-price'];
-  var roomsSelect = filtersForm.elements['housing-rooms'];
-  var guestsSelect = filtersForm.elements['housing-guests'];
-  var featuresElements = featuresSelect.elements;
+  var filtersFormElement = findElement('.map__filters');
+  var featuresSelectElement = findElement('#housing-features');
+  var typeSelectElement = filtersFormElement.elements['housing-type'];
+  var priceSelectElement = filtersFormElement.elements['housing-price'];
+  var roomsSelectElement = filtersFormElement.elements['housing-rooms'];
+  var guestsSelectElement = filtersFormElement.elements['housing-guests'];
+  var featuresElements = featuresSelectElement.elements;
 
   var isAny = function (value) {
     return value === 'any';
@@ -80,10 +79,10 @@
 
     for (var i = 0; i < pins.length; i++) {
       var pin = pins[i];
-      if (isType(pin, typeSelect.value)
-          && isPrice(pin, priceSelect.value)
-          && isRooms(pin, roomsSelect.value)
-          && isGuests(pin, guestsSelect.value)
+      if (isType(pin, typeSelectElement.value)
+          && isPrice(pin, priceSelectElement.value)
+          && isRooms(pin, roomsSelectElement.value)
+          && isGuests(pin, guestsSelectElement.value)
           && isFeatures(pin)) {
 
         outPins.push(pin);

@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var HEIGHT_PIN = 70;
 
   var LimitX = {
     MIN: 0,
@@ -30,10 +29,9 @@
   var mapElement = findElement('.map');
   var filtersFormElement = findElement('.map__filters');
   var formElement = findElement('.ad-form');
-  var mainPin = findElement('.map__pin--main');
+  var mainPinElement = findElement('.map__pin--main');
   var mapPinsElement = findElement('.map__pins');
-  var mapResetButton = findElement('.ad-form__reset');
-  var priceInput = findElement('#price');
+  var mapResetButtonElement = findElement('.ad-form__reset');
 
   var addressElement = formElement.elements.address;
 
@@ -54,15 +52,25 @@
   };
 
 
-  var fillAdressField = function (pin) {
-    var pinWidth = pin.getBoundingClientRect().width;
-    var pinX = pin.getBoundingClientRect().x - (pinWidth / 2);
-    var pinY = pin.getBoundingClientRect().y;
+  var fillAdressField = function (pin, active) {
+    var mapRect = mapPinsElement.getBoundingClientRect();
+    var pinRect = pin.getBoundingClientRect();
+
+    var halfOfWidh = PinSize.WIDTH / 2;
+
+    var left = pinRect.left - mapRect.left;
+    var top = pinRect.top - mapRect.top;
+
+    var pinX = left + halfOfWidh;
+    var pinY = active
+      ? top + PinSize.HEIGHT
+      // Потому что заблокированный пин — круглый
+      : top + halfOfWidh;
 
     setAddressField(pinX, pinY);
   };
 
-  fillAdressField(mainPin, HEIGHT_PIN);
+  fillAdressField(mainPinElement, false);
   changeFieldCondition(filtersFormElement.children, true);
   changeFieldCondition(formElement.children, true);
 
@@ -83,7 +91,9 @@
 
     changeFieldCondition(filtersFormElement.children);
     changeFieldCondition(formElement.children);
-    fillAdressField(mainPin, HEIGHT_PIN);
+    fillAdressField(mainPinElement, true);
+
+    window.valid.init();
 
     activated = true;
   };
@@ -92,19 +102,18 @@
   var deactivateMap = function () {
     mapElement.classList.add('map--faded');
     formElement.classList.add('ad-form--disabled');
-    mainPin.style.left = MainPinStartPosition.LEFT + 'px';
-    mainPin.style.top = MainPinStartPosition.TOP + 'px';
+    mainPinElement.style.left = MainPinStartPosition.LEFT + 'px';
+    mainPinElement.style.top = MainPinStartPosition.TOP + 'px';
     formElement.reset();
     window.pin.clear();
     window.card.remove();
     changeFieldCondition(formElement.children, true);
-    addressElement.placeholder = MainPinStartPosition.LEFT + ',' + ' ' + MainPinStartPosition.TOP;
-    price.placeholder = 1000;
+    fillAdressField(mainPinElement, false);
     activated = false;
   };
 
 
-  listen(mainPin, 'keydown', function (evt) {
+  listen(mainPinElement, 'keydown', function (evt) {
     if (window.tools.isEnter(evt)) {
       activateMap();
     }
@@ -135,8 +144,8 @@
   var movePinTo = function (left, top) {
     var address = getAddress(left, top);
 
-    mainPin.style.left = (address.x - PinSize.WIDTH / 2) + 'px';
-    mainPin.style.top = (address.y - PinSize.HEIGHT) + 'px';
+    mainPinElement.style.left = (address.x - PinSize.WIDTH / 2) + 'px';
+    mainPinElement.style.top = (address.y - PinSize.HEIGHT) + 'px';
 
     setAddressField(address.x, address.y);
   };
@@ -152,7 +161,7 @@
   var onPinMouseDown = function (evt) {
     activateMap();
     var rect = mapPinsElement.getBoundingClientRect();
-    var pinRect = mainPin.getBoundingClientRect();
+    var pinRect = mainPinElement.getBoundingClientRect();
 
     var offset = {
       x: evt.offsetX,
@@ -172,7 +181,7 @@
     listen(document, 'mouseup', onUp);
   };
 
-  listen(mainPin, 'mousedown', onPinMouseDown);
+  listen(mainPinElement, 'mousedown', onPinMouseDown);
 
   listen(formElement, 'submit', function (evt) {
     evt.preventDefault();
@@ -187,7 +196,7 @@
     );
   });
 
-  listen(mapResetButton, 'click', deactivateMap);
+  listen(mapResetButtonElement, 'click', deactivateMap);
 
   var applyFilter = function () {
     window.pin.render(window.filter(pins));

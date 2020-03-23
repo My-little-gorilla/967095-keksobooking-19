@@ -5,23 +5,33 @@
   var findElement = window.tools.findElement;
 
   var templatePinContent = findElement('#pin').content;
-  var templatePin = findElement('.map__pin', templatePinContent);
-  var mapPins = findElement('.map__pins', window.map.element);
+  var templatePinElement = findElement('.map__pin', templatePinContent);
+  var mapPinsElement = findElement('.map__pins', window.map.element);
 
   var renderedPins = [];
+  var focusedPinElement = null;
 
   var clearPins = function () {
     renderedPins.forEach(function (pinElement) {
       pinElement.remove();
     });
+    focusedPinElement = null;
     renderedPins = [];
   };
 
-  var focusPin = function (evt) {
-    evt.currentTarget.classList.add('map__pin--active');
+  var focusPin = function (pinElement) {
+    pinElement.classList.add('map__pin--active');
   };
-  var unfocusPin = function (evt) {
-    evt.currentTarget.classList.remove('map__pin--active');
+
+  var unfocusPin = function (pinElement) {
+    pinElement.classList.remove('map__pin--active');
+  };
+
+  var clearPinFocus = function () {
+    if (focusedPinElement) {
+      unfocusPin(focusedPinElement);
+      focusedPinElement = null;
+    }
   };
 
 
@@ -29,31 +39,26 @@
     clearPins();
     var fragment = document.createDocumentFragment();
     pinsArr.forEach(function (pin) {
-      var pinElement = templatePin.cloneNode(true);
+      var pinElement = templatePinElement.cloneNode(true);
       pinElement.style.left = pin.location.x + 'px';
       pinElement.style.top = pin.location.y + 'px';
       pinElement.querySelector('img').src = pin.author.avatar;
       pinElement.querySelector('img').alt = pin.offer.title;
-      listen(pinElement, 'click', function (evt) {
+      listen(pinElement, 'click', function () {
         window.card.create(pin);
-        focusPin(evt);
-      });
-      listen(pinElement, 'blur', function (evt) {
-        unfocusPin(evt);
-      });
-      listen(pinElement, 'keydown', function (evt) {
-        if (window.tools.isEsc(evt)) {
-          unfocusPin(evt);
-        }
+        clearPinFocus();
+        focusPin(pinElement);
+        focusedPinElement = pinElement;
       });
       renderedPins.push(pinElement);
       fragment.appendChild(pinElement);
     });
-    mapPins.appendChild(fragment);
+    mapPinsElement.appendChild(fragment);
   };
 
   window.pin = {
     render: renderPins,
-    clear: clearPins
+    clear: clearPins,
+    clearFocus: clearPinFocus
   };
 })();

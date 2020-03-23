@@ -13,10 +13,6 @@
     return element[method](query);
   };
 
-  var getRandomNumber = function (min, max) {
-    return Math.floor(Math.random() * (max - min) + min);
-  };
-
   var isEnter = function (evt) {
     return evt.keyCode === ENTER;
   };
@@ -49,7 +45,6 @@
 
   window.tools = {
     findElement: findElement,
-    getRandomNumber: getRandomNumber,
     isEnter: isEnter,
     isEsc: isEsc,
     listen: listen,

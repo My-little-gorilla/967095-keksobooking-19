@@ -30,6 +30,7 @@
     if (cardElement) {
       cardElement.remove();
       unlisten(window, 'keydown', removeCardHandler);
+      window.pin.clearFocus();
     }
     cardElement = null;
   };
