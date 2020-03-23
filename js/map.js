@@ -179,7 +179,7 @@
         new FormData(formElement),
         function () {
           window.modals.showSaveSuccess();
-           deactivateMap();
+          deactivateMap();
         },
         window.modals.showSaveError
     );

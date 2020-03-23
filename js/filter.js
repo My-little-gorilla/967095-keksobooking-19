@@ -76,24 +76,24 @@
   };
 
   window.filter = function (pins) {
-      var outPins = [];
+    var outPins = [];
 
-      for (var i = 0; i < pins.length; i++) {
-        var pin = pins[i];
-        if (isType(pin, typeSelect.value)
+    for (var i = 0; i < pins.length; i++) {
+      var pin = pins[i];
+      if (isType(pin, typeSelect.value)
           && isPrice(pin, priceSelect.value)
           && isRooms(pin, roomsSelect.value)
           && isGuests(pin, guestsSelect.value)
           && isFeatures(pin)) {
 
-          outPins.push(pin);
-        }
-
-        if (outPins.length === 5) {
-          return outPins;
-        }
+        outPins.push(pin);
       }
 
-      return outPins;
-    };
+      if (outPins.length === 5) {
+        return outPins;
+      }
+    }
+
+    return outPins;
+  };
 })();

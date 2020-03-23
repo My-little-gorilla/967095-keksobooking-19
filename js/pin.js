@@ -18,13 +18,12 @@
   };
 
   var focusPin = function (evt) {
-    if (evt.currentTarget.focus) {
-      evt.currentTarget.classList.add('map__pin--active');
-    }
-    // if (evt.currentTarget.blur) {
-    //   evt.currentTarget.classList.remove('map__pin--active');
-    // }
+    evt.currentTarget.classList.add('map__pin--active');
   };
+  var unfocusPin = function (evt) {
+    evt.currentTarget.classList.remove('map__pin--active');
+  };
+
 
   var renderPins = function (pinsArr) {
     clearPins();
@@ -39,7 +38,9 @@
         window.card.create(pin);
         focusPin(evt);
       });
-
+      pinElement.addEventListener('blur', function (evt) {
+        unfocusPin(evt);
+      });
       renderedPins.push(pinElement);
       fragment.appendChild(pinElement);
     });
