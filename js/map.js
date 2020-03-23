@@ -18,9 +18,9 @@
     HEIGHT: 70
   };
 
-  var MainPinStartAddress = {
-    X: 577,
-    Y: 375
+  var MainPinStartPosition = {
+    LEFT: 570,
+    TOP: 375
   };
 
 
@@ -32,7 +32,7 @@
   var formElement = findElement('.ad-form');
   var mainPin = findElement('.map__pin--main');
   var mapPinsElement = findElement('.map__pins');
-  console.log(mainPin.style);
+  var mapResetButton = findElement('.ad-form__reset');
 
   var addressElement = formElement.elements.address;
 
@@ -88,13 +88,17 @@
   };
 
 
-  var diactivateMap = function () {
+  var deactivateMap = function () {
     mapElement.classList.add('map--faded');
     formElement.classList.add('ad-form--disabled');
-    mainPin.style.left = MainPinStartAddress.X + 'px';
-    mainPin.style.left = MainPinStartAddress.Y + 'px';
+    mainPin.style.left = MainPinStartPosition.LEFT + 'px';
+    mainPin.style.top = MainPinStartPosition.TOP + 'px';
+    formElement.reset();
     window.pin.clear();
+    window.card.remove();
     changeFieldCondition(formElement.children, true);
+    addressElement.placeholder = MainPinStartPosition.LEFT + ',' + ' ' + MainPinStartPosition.TOP;
+    activated = false;
   };
 
 
@@ -173,10 +177,15 @@
 
     window.backend.save(
         new FormData(formElement),
-        window.modals.showSaveSuccess,
+        function () {
+          window.modals.showSaveSuccess();
+           deactivateMap();
+        },
         window.modals.showSaveError
     );
   });
+
+  listen(mapResetButton, 'click', deactivateMap);
 
   var applyFilter = function () {
     window.pin.renderPins(window.filter(pins));
@@ -192,6 +201,6 @@
   window.map = {
     formElement: formElement,
     element: mapElement,
-    diactivate: diactivateMap
+    deactivate: deactivateMap
   };
 })();

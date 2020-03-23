@@ -17,6 +17,15 @@
     renderedPins = [];
   };
 
+  var focusPin = function (evt) {
+    if (evt.currentTarget.focus) {
+      evt.currentTarget.classList.add('map__pin--active');
+    }
+    // if (evt.currentTarget.blur) {
+    //   evt.currentTarget.classList.remove('map__pin--active');
+    // }
+  };
+
   var renderPins = function (pinsArr) {
     clearPins();
     var fragment = document.createDocumentFragment();
@@ -26,9 +35,9 @@
       pinElement.style.top = pin.location.y + 'px';
       pinElement.querySelector('img').src = pin.author.avatar;
       pinElement.querySelector('img').alt = pin.offer.title;
-
-      pinElement.addEventListener('click', function () {
+      pinElement.addEventListener('click', function (evt) {
         window.card.create(pin);
+        focusPin(evt);
       });
 
       renderedPins.push(pinElement);
