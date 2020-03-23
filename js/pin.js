@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-
+  var listen = window.tools.listen;
   var findElement = window.tools.findElement;
 
   var templatePinContent = findElement('#pin').content;
@@ -34,12 +34,17 @@
       pinElement.style.top = pin.location.y + 'px';
       pinElement.querySelector('img').src = pin.author.avatar;
       pinElement.querySelector('img').alt = pin.offer.title;
-      pinElement.addEventListener('click', function (evt) {
+      listen(pinElement, 'click', function (evt) {
         window.card.create(pin);
         focusPin(evt);
       });
-      pinElement.addEventListener('blur', function (evt) {
+      listen(pinElement, 'blur', function (evt) {
         unfocusPin(evt);
+      });
+      listen(pinElement, 'keydown', function (evt) {
+        if (window.tools.isEsc(evt)) {
+          unfocusPin(evt);
+        }
       });
       renderedPins.push(pinElement);
       fragment.appendChild(pinElement);
@@ -48,7 +53,7 @@
   };
 
   window.pin = {
-    renderPins: renderPins,
+    render: renderPins,
     clear: clearPins
   };
 })();

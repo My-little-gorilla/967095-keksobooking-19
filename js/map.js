@@ -33,6 +33,7 @@
   var mainPin = findElement('.map__pin--main');
   var mapPinsElement = findElement('.map__pins');
   var mapResetButton = findElement('.ad-form__reset');
+  var priceInput = findElement('#price');
 
   var addressElement = formElement.elements.address;
 
@@ -67,7 +68,7 @@
 
   var onLoad = function (data) {
     pins = data;
-    window.pin.renderPins(window.filter(pins));
+    window.pin.render(window.filter(pins));
   };
 
   var activateMap = function () {
@@ -98,6 +99,7 @@
     window.card.remove();
     changeFieldCondition(formElement.children, true);
     addressElement.placeholder = MainPinStartPosition.LEFT + ',' + ' ' + MainPinStartPosition.TOP;
+    price.placeholder = 1000;
     activated = false;
   };
 
@@ -188,7 +190,7 @@
   listen(mapResetButton, 'click', deactivateMap);
 
   var applyFilter = function () {
-    window.pin.renderPins(window.filter(pins));
+    window.pin.render(window.filter(pins));
     window.card.remove();
   };
 
